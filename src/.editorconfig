@@ -1,0 +1,43 @@
+# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+###############################
+# Core EditorConfig Options   #
+###############################
+
+# Remove the line below if you want to inherit .editorconfig settings from higher directories
+root = true
+
+# All files
+[*]
+indent_style = space
+
+# C# files
+[*.{cs,csx,vb,vbx}]
+
+# Indentation and spacing
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = false
+
+[*.{xml,xsd,csproj}]
+indent_size = 2
+
+
+###############################
+# .NET Coding Conventions     #
+###############################
+[*.{cs,vb}]
+
+# Organize usings
+dotnet_sort_system_directives_first = false:warning
+
+# dotnet code-analysis
+
+# CA2016 ForwardCancellationTokenToInvocations
+dotnet_diagnostic.CA2016.severity = error
+
+csharp_style_namespace_declarations = file_scoped
+dotnet_diagnostic.IDE0161.severity = warning

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>MicrosoftLogger.Analyzer</PackageId>
+    <Version>1.0.0.0</Version>
+    <Authors>Pavel Stefanov</Authors>
+    <PackageLicenseUrl>https://github.com/PavelStefanov/LoggerAnalyzer/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/PavelStefanov/LoggerAnalyzer</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/PavelStefanov/LoggerAnalyzer.git</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Title>Analyzer for Microsoft ILogger&lt;TCategoryName&gt;</Title>
+    <Description>Analyzer helps you to find ILogger with not right category name and fix it</Description>
+    <PackageTags>MicrosoftLogger.Analyzer, analyzers, Logging, Microsoft.Extensions.Logging.ILogger</PackageTags>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LoggerAnalyzer.CodeFixes\LoggerAnalyzer.CodeFixes.csproj" />
+    <ProjectReference Include="..\LoggerAnalyzer\LoggerAnalyzer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\LoggerAnalyzer.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\LoggerAnalyzer.CodeFixes.dll" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
+
+</Project>

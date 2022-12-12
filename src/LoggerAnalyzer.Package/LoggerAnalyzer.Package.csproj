@@ -16,12 +16,14 @@
     <RepositoryUrl>https://github.com/PavelStefanov/LoggerAnalyzer.git</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Title>Analyzer for Microsoft ILogger&lt;TCategoryName&gt;</Title>
-    <Description>Analyzer helps you to find ILogger with not right category name and fix it</Description>
+    <Description>Analyzer helps you to find ILogger&lt;TCategoryName&gt; with wrong category name and fix it</Description>
     <PackageTags>MicrosoftLogger.Analyzer, analyzers, Logging, Microsoft.Extensions.Logging.ILogger</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+    <Product>MicrosoftLogger.Analyzer</Product>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,6 +33,7 @@
 
   <ItemGroup>
     <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <Target Name="_AddAnalyzersToOutput">

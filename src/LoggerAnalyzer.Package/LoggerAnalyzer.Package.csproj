@@ -11,7 +11,7 @@
     <PackageId>MicrosoftLogger.Analyzer</PackageId>
     <Version>1.0.0.0</Version>
     <Authors>Pavel Stefanov</Authors>
-    <PackageLicenseUrl>https://github.com/PavelStefanov/LoggerAnalyzer/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/PavelStefanov/LoggerAnalyzer</PackageProjectUrl>
     <RepositoryUrl>https://github.com/PavelStefanov/LoggerAnalyzer.git</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -34,6 +34,7 @@
   <ItemGroup>
     <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath=""/>
   </ItemGroup>
 
   <Target Name="_AddAnalyzersToOutput">

@@ -1,9 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Immutable;
 
 namespace LoggerAnalyzer;
 
@@ -34,41 +32,42 @@ public class LoggerGenericTypeAnalyzer : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.ReportDiagnostics);
         context.EnableConcurrentExecution();
 
-        context.RegisterSyntaxNodeAction(AnalyzeSyntax, SyntaxKind.ConstructorDeclaration);
-    }
-
-    private static void AnalyzeSyntax(SyntaxNodeAnalysisContext context)
-    {
-        var constructorDeclarationSyntaxNode = (ConstructorDeclarationSyntax)context.Node;
-        foreach (var parameter in constructorDeclarationSyntaxNode.ParameterList.Parameters)
+        context.RegisterCompilationStartAction(context =>
         {
-            var genericParameterType = parameter.Type as GenericNameSyntax;
-            if (genericParameterType is null)
+            var loggerSymbol = context.Compilation.GetTypeByMetadataName("Microsoft.Extensions.Logging.ILogger`1");
+            if (loggerSymbol == null)
+                return;
+
+            context.RegisterSymbolAction(context =>
             {
-                continue;
-            }
+                var symbol = (IMethodSymbol)context.Symbol;
+                if (symbol.MethodKind != MethodKind.Constructor)
+                    return;
 
-            if (genericParameterType.TypeArgumentList.Arguments.Count != 1)
-            {
-                continue;
-            }
+                foreach (var parameter in symbol.Parameters)
+                {
+                    if (parameter.Type is not INamedTypeSymbol parameterType)
+                        continue;
 
-            var parameterSymbol = context.SemanticModel.GetDeclaredSymbol(parameter, context.CancellationToken);
-            if (parameterSymbol.Type.Name != "ILogger")
-            {
-                continue;
-            }
+                    // Only consider ILogger<T> parameters
+                    if (!parameterType.OriginalDefinition.Equals(loggerSymbol, SymbolEqualityComparer.Default))
+                        continue;
 
-            var classSymbol = context.SemanticModel.GetDeclaredSymbol(constructorDeclarationSyntaxNode.Parent, context.CancellationToken);
+                    // Check <T> is the containing class
+                    if (parameterType.TypeArguments[0].Equals(symbol.ContainingType, SymbolEqualityComparer.Default))
+                        continue;
 
-            var genericArgument = genericParameterType.TypeArgumentList.Arguments.First() as IdentifierNameSyntax;
-            var genericArgumentType = context.SemanticModel.GetTypeInfo(genericArgument, context.CancellationToken);
-            if (genericArgumentType.Type.Name.Equals(classSymbol.Name, StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
+                    // Try to report the type argument. If not possible, report the parameter
+                    var syntax = parameter.DeclaringSyntaxReferences[0].GetSyntax();
+                    if (syntax is ParameterSyntax { Type: GenericNameSyntax { TypeArgumentList.Arguments: var arguments } } && arguments.Count == 1)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, arguments[0].GetLocation(), symbol.ContainingType.Name));
+                        continue;
+                    }
 
-            context.ReportDiagnostic(Diagnostic.Create(Rule, genericArgument.GetLocation(), classSymbol.Name));
-        }
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, syntax.GetLocation(), symbol.ContainingType.Name));
+                }
+            }, SymbolKind.Method);
+        });
     }
 }

@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <PackageId>MicrosoftLogger.Analyzer</PackageId>
-    <Version>1.0.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Pavel Stefanov</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/PavelStefanov/LoggerAnalyzer</PackageProjectUrl>
@@ -24,6 +24,7 @@
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
     <Product>MicrosoftLogger.Analyzer</Product>
     <RepositoryType>git</RepositoryType>
+    <releaseNotes>Thanks to Gérald Barré(@meziantou) for helping improve performance of the analyzer</releaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

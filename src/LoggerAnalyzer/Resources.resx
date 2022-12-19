@@ -124,6 +124,6 @@
     <value>ILogger generic argument must be '{0}' to log right category name</value>
   </data>
   <data name="LoggerGenericTypeAnalyzerTitle" xml:space="preserve">
-    <value>Class resolves not right ILogger&lt;TCategoryName&gt;</value>
+    <value>Class resolves wrong ILogger&lt;TCategoryName&gt;</value>
   </data>
 </root>

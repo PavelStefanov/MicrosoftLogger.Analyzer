@@ -4,10 +4,10 @@ Analyzer helps you to find ILogger\<TCategoryName\> with wrong category name and
 
 ## Installation
 
-To install MicrosoftLogger.Analyzer, run the following command in the Nuget Package Manager Console:
+To install MicrosoftLogger.Analyzer, run the following command:
 
 ```
-Install-Package MicrosoftLogger.Analyzer
+dotnet add package MicrosoftLogger.Analyzer
 ```
 
 ## Description

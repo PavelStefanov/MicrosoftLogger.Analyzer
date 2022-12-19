@@ -79,7 +79,7 @@ namespace LoggerAnalyzer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Class resolves not right ILogger&lt;TCategoryName&gt;.
+        ///   Looks up a localized string similar to Class resolves wrong ILogger&lt;TCategoryName&gt;.
         /// </summary>
         internal static string LoggerGenericTypeAnalyzerTitle {
             get {

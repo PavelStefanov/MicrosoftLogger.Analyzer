@@ -24,7 +24,7 @@
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
     <Product>MicrosoftLogger.Analyzer</Product>
     <RepositoryType>git</RepositoryType>
-    <releaseNotes>Thanks to Gérald Barré(@meziantou) for helping improve performance of the analyzer</releaseNotes>
+    <PackageReleaseNotes>Thanks to Gérald Barré(@meziantou) for helping improve performance of the analyzer</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <PackageId>MicrosoftLogger.Analyzer</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Pavel Stefanov</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/PavelStefanov/LoggerAnalyzer</PackageProjectUrl>

@@ -30,17 +30,26 @@ public class LoggerGenericTypeAnalyzerCodeFixProvider : CodeFixProvider
 
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
-        var loggerGenericArgument = root.FindToken(diagnosticSpan.Start).Parent as IdentifierNameSyntax;
-        var loggerParameter = loggerGenericArgument.AncestorsAndSelf().OfType<ParameterSyntax>().First();
+        var loggerGenericArgument = root.FindToken(diagnosticSpan.Start).Parent;
 
-        var @class = loggerGenericArgument.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First();
+        var loggerParameter = loggerGenericArgument.AncestorsAndSelf().OfType<ParameterSyntax>().FirstOrDefault();
+        if (loggerParameter == null)
+            return;
 
-        var constructor = loggerGenericArgument.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
-        var loggerAssignmentExpression = constructor.DescendantNodes().OfType<ExpressionStatementSyntax>()
-             .FirstOrDefault(e => e.Expression is AssignmentExpressionSyntax aes
-                && aes.Left is IdentifierNameSyntax
-                && aes.Right is IdentifierNameSyntax ins
-                && ins.Identifier.Text == loggerParameter.Identifier.Text);
+        var @class = loggerGenericArgument.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault();
+        if (@class == null)
+            return;
+
+        var constructor = loggerGenericArgument.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
+        if (constructor == null)
+            return;
+
+        var loggerAssignmentExpression = constructor.DescendantNodes()
+                .OfType<ExpressionStatementSyntax>()
+                .FirstOrDefault(e => e.Expression is AssignmentExpressionSyntax aes
+                    && aes.Left is IdentifierNameSyntax
+                    && aes.Right is IdentifierNameSyntax ins
+                    && ins.Identifier.Text == loggerParameter.Identifier.Text);
 
         SyntaxNode loggerField = null;
         if (loggerAssignmentExpression != null)
@@ -65,10 +74,14 @@ public class LoggerGenericTypeAnalyzerCodeFixProvider : CodeFixProvider
 
     private Task<Document> ChangeLoggerArgument(Document document,
                                                     SyntaxNode root,
-                                                    IdentifierNameSyntax loggerGenericArgument,
+                                                    SyntaxNode loggerGenericArgument,
                                                     TypeDeclarationSyntax @class,
                                                     SyntaxNode loggerField)
     {
+        var loggerGenericArgumentIdentifier = loggerGenericArgument.ChildTokens().FirstOrDefault();
+        if (loggerGenericArgumentIdentifier == null)
+            return Task.FromResult(document);
+
         var newLoggerGenericArgumentIdentifier = SyntaxFactory.Identifier(
            loggerGenericArgument.GetLeadingTrivia(),
            @class.Identifier.Text,
@@ -77,7 +90,7 @@ public class LoggerGenericTypeAnalyzerCodeFixProvider : CodeFixProvider
         SyntaxNode newRoot = null;
         if (loggerField == null)
         {
-            newRoot = root.ReplaceToken(loggerGenericArgument.Identifier, newLoggerGenericArgumentIdentifier);
+            newRoot = root.ReplaceToken(loggerGenericArgumentIdentifier, newLoggerGenericArgumentIdentifier);
         }
         else
         {
@@ -89,18 +102,22 @@ public class LoggerGenericTypeAnalyzerCodeFixProvider : CodeFixProvider
 
             };
 
-            var loggerFieldGenericArgument = loggerFieldGenericType.TypeArgumentList.Arguments.OfType<IdentifierNameSyntax>().First();
+            var loggerFieldGenericArgument = loggerFieldGenericType.TypeArgumentList.Arguments.FirstOrDefault();
+            if (loggerFieldGenericArgument == null)
+                return Task.FromResult(document);
+
+            var loggerFieldGenericArgumentIdentifier = loggerFieldGenericArgument.ChildTokens().First();
 
             var newlLoggerFieldGenericArgumentIdentifier = SyntaxFactory.Identifier(
                 loggerFieldGenericArgument.GetLeadingTrivia(),
                 @class.Identifier.Text,
                 loggerFieldGenericArgument.GetTrailingTrivia());
 
-            newRoot = root.ReplaceTokens(new[] { loggerGenericArgument.Identifier, loggerFieldGenericArgument.Identifier }, (t, _) =>
+            newRoot = root.ReplaceTokens(new[] { loggerGenericArgumentIdentifier, loggerFieldGenericArgumentIdentifier }, (t, _) =>
                {
-                   if (t == loggerGenericArgument.Identifier)
+                   if (t == loggerGenericArgumentIdentifier)
                        return newLoggerGenericArgumentIdentifier;
-                   if (t == loggerFieldGenericArgument.Identifier)
+                   if (t == loggerFieldGenericArgumentIdentifier)
                        return newlLoggerFieldGenericArgumentIdentifier;
                    return default;
                });

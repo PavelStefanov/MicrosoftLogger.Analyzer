@@ -606,4 +606,65 @@ namespace LoggerAnalyzerTest
             FixedCode = fixedCode
         }.RunAsync();
     }
+
+    [TestMethod]
+    public async Task Generic_NotCorrectLoggerField_Diagnostic_CheckFix()
+    {
+        var code = @"
+using Microsoft.Extensions.Logging;
+
+namespace LoggerAnalyzerTest
+{
+    public class AnotherWorker<T>
+    {
+        public AnotherWorker()
+        {
+        }
+    }
+
+    public class Worker<T>
+    {
+        private readonly ILogger<AnotherWorker<T>> _logger;
+
+        public Worker(ILogger<AnotherWorker<T>> logger)
+        {
+            _logger = logger;
+        }
+    }
+}";
+
+        var fixedCode = @"
+using Microsoft.Extensions.Logging;
+
+namespace LoggerAnalyzerTest
+{
+    public class AnotherWorker<T>
+    {
+        public AnotherWorker()
+        {
+        }
+    }
+
+    public class Worker<T>
+    {
+        private readonly ILogger<Worker<T>> _logger;
+
+        public Worker(ILogger<Worker<T>> logger)
+        {
+            _logger = logger;
+        }
+    }
+}";
+
+        await new VerifyCS.Test
+        {
+            TestState =
+            {
+                Sources = { code },
+                AdditionalReferences = { typeof(ILogger<LoggerAnalyzerUnitTest>).Assembly.Location },
+                ExpectedDiagnostics = { VerifyCS.Diagnostic().WithLocation(17, 31).WithSeverity(DiagnosticSeverity.Error).WithArguments("Worker") },
+            },
+            FixedCode = fixedCode
+        }.RunAsync();
+    }
 }

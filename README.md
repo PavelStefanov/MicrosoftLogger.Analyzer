@@ -1,4 +1,5 @@
 # MicrosoftLogger.Analyzer
+[![NuGet Version and Downloads count](https://buildstats.info/nuget/MicrosoftLogger.Analyzer)](https://www.nuget.org/packages/MicrosoftLogger.Analyzer)
 
 Analyzer helps you to find ILogger\<TCategoryName\> with wrong category name and fix it
 
